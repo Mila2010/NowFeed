@@ -58,8 +58,6 @@ public class CardAdapter extends RecyclerView.Adapter {
             default:
                 ThirdCardViewHolder thirdCard = (ThirdCardViewHolder) holder;
                 thirdCard.onBind((String) items.get(position));
-//                thirdCard.onBind((String) items.get(position));
-//                thirdCard.onBind((String) items.get(position));
                 break;
         }
     }

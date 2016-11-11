@@ -111,3 +111,18 @@ public class MainActivity extends AppCompatActivity {
     }
 
 }
+
+//                SharedPreferences sharedPrefs = view.getContext().getSharedPreferences()
+//                SharedPreferences.Editor editor = sharedPrefs.edit();
+//                editor.putStringSet("MyNotes", mWrittenNotes);
+//                Log.d(TAG, String.valueOf(editor.putStringSet(TAG, mWrittenNotes)));
+//                editor.commit();
+
+//    @Override
+//    protected void onDestroy() {
+//        super.onDestroy();
+//        sharedPrefs = getSharedPreferences(TAG,MODE_PRIVATE);
+//        SharedPreferences.Editor editor = sharedPrefs.edit();
+//        editor.putStringSet(TAG,mWrittenNotes);
+//        editor.commit();
+//    }
