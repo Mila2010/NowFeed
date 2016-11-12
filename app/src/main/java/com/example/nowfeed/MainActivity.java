@@ -1,5 +1,7 @@
 package com.example.nowfeed;
 
+import android.content.SharedPreferences;
+import android.content.res.Configuration;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
@@ -19,6 +21,7 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
 
 import retrofit2.Call;
 import retrofit2.Callback;
@@ -28,11 +31,11 @@ import retrofit2.converter.gson.GsonConverterFactory;
 
 public class MainActivity extends AppCompatActivity {
 
+    SharedPreferences sharedPrefs;
     List<Object> mCardsData = new ArrayList<>();
-
+    Set<String> getAddedNotes,getSavedNotes;
 
     Button refresh;
-    private static final String TAG = "MainActivity";
     private static final String API_KEY = "62f136aaf813f7d74fabcdfdb0fcb3ba";
     private static final String LOCATION = "NEWYORK,USA";
     RecyclerView recyclerView;
@@ -46,7 +49,18 @@ public class MainActivity extends AppCompatActivity {
         InstagramAPIs igAPI = new InstagramAPIs(this);
         igAPI.getUserID();
 
-        mCardsData.add("Mila's Notes");
+        mCardsData.add("Write some notes here");
+        if (getResources().getConfiguration().orientation == Configuration.ORIENTATION_LANDSCAPE) {
+            // If the screen is now in landscape mode, we can show the
+            // dialog in-line with the list so we don't need this activity.
+            sharedPrefs = getSharedPreferences("Stuff",MODE_PRIVATE);
+            getAddedNotes = sharedPrefs.getStringSet("mAddedNotes", ThirdCardViewHolder.getAddHash());
+            getSavedNotes = sharedPrefs.getStringSet("mSavedNotes", ThirdCardViewHolder.getSavedHash());
+            ThirdCardViewHolder.setSavedNotes(getSavedNotes);
+            ThirdCardViewHolder.setAddedNotes(getAddedNotes);
+//            finish();
+//            return ;
+        }
 
         Retrofit retrofit = new Retrofit.Builder().baseUrl("http://api.openweathermap.org/").addConverterFactory(GsonConverterFactory.create()).build();
         final WeatherApi weatherApi = retrofit.create(WeatherApi.class);
@@ -59,9 +73,9 @@ public class MainActivity extends AppCompatActivity {
                     WeatherRespond weatherRespond = response.body();
                     List<Weather> weather = weatherRespond.getWeather();
 
-                    Log.d(TAG, weather.get(0).getDescription());
-                    Log.d(TAG, weather.get(0).getMain());
-                    Log.d(TAG, weather.get(0).getIcon());
+                    Log.d("MainActivity", weather.get(0).getDescription());
+                    Log.d("MainActivity", weather.get(0).getMain());
+                    Log.d("MainActivity", weather.get(0).getIcon());
                     mCardsData.add(weatherRespond);
                     //mCardsData.add(new Instagram());
                     initializeRecView();
@@ -95,7 +109,7 @@ public class MainActivity extends AppCompatActivity {
     public void initializeRecView() {
         recyclerView = (RecyclerView) findViewById(R.id.recycler_view);
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
-        recyclerView.setAdapter(new CardAdapter(mCardsData));
+        recyclerView.setAdapter(new CardAdapter(mCardsData,this));
     }
 
     public void getWeatherPicture(String icon) throws MalformedURLException {
@@ -107,22 +121,16 @@ public class MainActivity extends AppCompatActivity {
         } catch (IOException e) {
             e.printStackTrace();
         }
-
     }
 
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        sharedPrefs = getSharedPreferences("Stuff",MODE_PRIVATE);
+        SharedPreferences.Editor editor = sharedPrefs.edit();
+        editor.putStringSet("mAddNotes", ThirdCardViewHolder.getAddHash());
+        editor.putStringSet("mSavedNotes", ThirdCardViewHolder.getSavedHash());
+        editor.apply();
+    }
 }
 
-//                SharedPreferences sharedPrefs = view.getContext().getSharedPreferences()
-//                SharedPreferences.Editor editor = sharedPrefs.edit();
-//                editor.putStringSet("MyNotes", mWrittenNotes);
-//                Log.d(TAG, String.valueOf(editor.putStringSet(TAG, mWrittenNotes)));
-//                editor.commit();
-
-//    @Override
-//    protected void onDestroy() {
-//        super.onDestroy();
-//        sharedPrefs = getSharedPreferences(TAG,MODE_PRIVATE);
-//        SharedPreferences.Editor editor = sharedPrefs.edit();
-//        editor.putStringSet(TAG,mWrittenNotes);
-//        editor.commit();
-//    }

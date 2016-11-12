@@ -1,5 +1,6 @@
 package com.example.nowfeed;
 
+import android.app.Activity;
 import android.support.v7.widget.RecyclerView;
 import android.view.ViewGroup;
 
@@ -17,10 +18,12 @@ public class CardAdapter extends RecyclerView.Adapter {
     private final int  INSTAGRAM = 0,WEATHER = 1,NOTES=2 ;
 
     public static final String SHARED_NAME= "mynotes";
+    Activity activity;
 
 
-    public CardAdapter(List<Object> items) {
+    public CardAdapter(List<Object> items, Activity activity) {
         this.items=items;
+        this.activity = activity;
     }
 
     @Override
@@ -78,4 +81,5 @@ public class CardAdapter extends RecyclerView.Adapter {
             }
             return -1;
         }
+
 }

@@ -1,5 +1,7 @@
 package com.example.nowfeed;
 
+import android.app.Activity;
+import android.app.FragmentTransaction;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -17,21 +19,26 @@ import static com.example.nowfeed.R.id.list_notes;
 import static com.example.nowfeed.R.id.notes;
 import static com.example.nowfeed.R.id.save_notes;
 
+;
+
 /**
  * Created by Millochka on 10/31/16.
  */
 
 public class ThirdCardViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
 
-//    Fragment fragment = new Fragment();
-
     View mView;
     TextView mNote;
     EditText mEdit;
     Button mAdd, mSave, mList;
 
-    Set<String> mAddNotes = new HashSet<String>();
-    Set<String> mSavedNotes = new HashSet<String>();
+    static Set<String> mAddNotes = new HashSet<String>();
+    static Set<String> mSavedNotes = new HashSet<String>();
+
+    static Set<String> lastAdded = new HashSet<String>();
+    static Set<String> lastSaved = new HashSet<String>();
+
+    Activity activity;
 
     public ThirdCardViewHolder(ViewGroup parent) {
         super(inflateView(parent));
@@ -45,6 +52,18 @@ public class ThirdCardViewHolder extends RecyclerView.ViewHolder implements View
         mSave.setOnClickListener(this);
         mList = (Button) mView.findViewById(R.id.list_notes);
         mList.setOnClickListener(this);
+
+
+        if(lastSaved != null) {
+            for (String read : lastAdded) {
+//                mEdit.setText();
+                System.out.println(read);
+            }
+        } else {
+            for (String readout : lastSaved){
+                System.out.println(readout);
+            }
+        }
 
     }
 
@@ -69,23 +88,38 @@ public class ThirdCardViewHolder extends RecyclerView.ViewHolder implements View
                 break;
             case save_notes:
                 String saveLast = mEdit.getText().toString();
-                mSavedNotes.add(saveLast);
+                mAddNotes.add(saveLast);
                 Toast.makeText(view.getContext(), "saved notes", Toast.LENGTH_SHORT).show();
                 break;
             case list_notes:
                 //fragments - to display my list of notes
                 Toast.makeText(view.getContext(), "list notes", Toast.LENGTH_SHORT).show();
-//                getFragment();
+                getFragment();
                 break;
         }
     }
+    private void getFragment() {
+        // using support.FragmentTransaction
+                FragmentTransaction fragmentTransaction = activity.getFragmentManager().beginTransaction();
+                fragmentTransaction.add(R.id.notes_fragment_container,new ListNotesFragment());
+                fragmentTransaction.commit();
+    }
 
-//    private void getFragment() {
-//                FragmentTransaction fragmentTransaction = fragment.getFragmentManager().beginTransaction();
-//                ListNotesFragment listFrag = new ListNotesFragment();
-//                fragmentTransaction.add(R.id.notes_fragment,listFrag);
-//                fragmentTransaction.commit();
-//    }
+    public static Set<String> getAddHash(){
+        return mAddNotes;
+    }
+
+    public static Set<String> getSavedHash(){
+        return mSavedNotes;
+    }
+
+    public static void setSavedNotes(Set<String> savedNotes){
+        lastSaved = savedNotes;
+    }
+
+    public static void setAddedNotes(Set<String> addedNotes){
+        lastAdded = addedNotes;
+    }
 }
 
 
